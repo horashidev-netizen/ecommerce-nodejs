@@ -12,7 +12,11 @@ var keySchema = new Schema({
         type: String,
         require: true,
     },
-    refeshToken: {
+    privateKey:{
+        type: String,
+        require: true,
+    },
+    refreshToken: {
         type: String,
         default: ""
     }

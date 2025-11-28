@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const keyTokenService = require("./keyToken.service");
 const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData } = require("../utils");
+const { log } = require("console");
 const salt = 10;
 
 const RoleShop = {
@@ -29,38 +30,45 @@ class AccessService {
             console.log(newShop);
             if (newShop) {
                 //Create publickey and privatekey with new shop
-                const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
-                    modulusLength: 4096,
-                    publicKeyEncoding: {
-                        type: 'pkcs1', // Thường dùng pkcs1 cho RSA public key
-                        format: 'pem',
-                    },
-                    privateKeyEncoding: {
-                        type: 'pkcs1',
-                        format: 'pem',
-                    },
-                },
-                )
+                // const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+                //     modulusLength: 4096,
+                //     publicKeyEncoding: {
+                //         type: 'pkcs1', // Thường dùng pkcs1 cho RSA public key
+                //         format: 'pem',
+                //     },
+                //     privateKeyEncoding: {
+                //         type: 'pkcs1',
+                //         format: 'pem',
+                //     },
+                // },
+                // )
+                const publicKey = crypto.randomBytes(64).toString('hex');
+                const privateKey = crypto.randomBytes(64).toString('hex');
+
+                const tokens = await createTokenPair({ userID: newShop._id, email, roles: RoleShop.SHOP }, publicKey, privateKey);
+                console.log(">>> Check token: ", tokens);
                 console.log({ publicKey, privateKey }); //Save Collection KeyStore
-                const publicKeyString = await keyTokenService.createKeyToken({
+
+                const keyStore = await keyTokenService.createKeyToken({
                     userID: newShop._id,
-                    publicKey
+                    publicKey,
+                    privateKey,
+                    refreshToken: tokens.refreshToken
                 })
-                if (!publicKeyString) {
+                console.log(">>>>>", keyStore)
+                if (!keyStore) {
                     return {
                         code: 'xxxx',
                         message: 'publicKeyString error'
                     }
                 }
 
-                const publicKeyObject = crypto.createPublicKey( publicKey )
-                
                 //Create Token pair
-                const tokens = await createTokenPair({ userID: newShop._id, email, roles: RoleShop.SHOP }, publicKeyObject, privateKey);
+
                 return {
                     code: 201,
                     metadata: {
-                        shop: getInfoData({fields: ["_id", "name", "email"], object: newShop}),
+                        shop: getInfoData({ fields: ["_id", "name", "email"], object: newShop }),
                         tokens
                     }
                 }
