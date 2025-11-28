@@ -7,5 +7,4 @@ Content-Type: application/json
     "name": "Shop-01",
     "email": "shop1@example.com",
     "password": "password123",
-    "roles": ["SHOP"]
 }

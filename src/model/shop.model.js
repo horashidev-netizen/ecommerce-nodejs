@@ -27,7 +27,7 @@ var shopSchema = new Schema({
     },
     verify: {
         type: Schema.Types.Boolean,
-        default: flase
+        default: false
     }
 },
 {
