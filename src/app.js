@@ -8,18 +8,14 @@ const morgan = require('morgan');
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
 app.use(helmet());
 app.use(morgan('short'));
 app.use(compression());
 
 require('./dbs/init.mongodb');
-checkOverLoad();
+// checkOverLoad();
 
-app.get('/', (req, res) => {
-    return res.status(200).json({
-        message: 'you got this page',
-        body: "Xin chao bdan nhe".repeat(1000)
-    })
-})
-
+app.use('/', require('./routes/index'))
 module.exports = app

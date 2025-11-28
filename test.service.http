@@ -1,1 +1,11 @@
-GET http://localhost:3000/
+@url_dev = http://127.0.0.1:3000/api/shop/auth/signup
+
+POST {{url_dev}}
+Content-Type: application/json
+
+{
+    "name": "Shop-01",
+    "email": "shop1@example.com",
+    "password": "password123",
+    "roles": ["SHOP"]
+}
