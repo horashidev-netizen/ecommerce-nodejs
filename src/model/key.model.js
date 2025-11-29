@@ -16,9 +16,13 @@ var keySchema = new Schema({
         type: String,
         require: true,
     },
+    refreshTokenUsed: {
+        type: Array,
+        default: [] //Nhung RT da su dung
+    },
     refreshToken: {
-        type: String,
-        default: ""
+        type: String, 
+        require: true
     }
 },
     {

@@ -1,4 +1,5 @@
-require('dotenv').config()
+// require('dotenv').config()
+
 const { checkOverLoad } = require('./helpers/check.connect');
 const compression = require('compression');
 const express = require('express');
