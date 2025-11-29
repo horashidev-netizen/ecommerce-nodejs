@@ -9,9 +9,9 @@ router.use(apiKey);
 
 router.use(permission('0000'));
 
-router.use('/api/shop', require('./access/index'));
+router.use('/v1/api/shop', require('./access/index'));
 
-router.get('v1/api', (req, res, next) => {
+router.get('/v1/api', (req, res, next) => {
     return res.status(200).json({
         message: 'you got this page',
         body: "Xin chao bdan nhe"

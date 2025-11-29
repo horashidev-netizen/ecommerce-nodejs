@@ -11,13 +11,18 @@ const HEADER = {
 const apiKey = async (req, res, next) => {
     try{
         const key = req.headers[HEADER.API_KEY]?.toString();
-        if(!key){
-            return res.json({
-                message: 'Forbidden Error'
-            });
-        }
+        console.log('>>> Check key: ',key);
+        
+        // if(!key){
+        //     return res.json({
+        //         message: 'Forbidden Error'
+        //     });
+        // }
         //Check Objkey
         const objKey = await findById(key);
+
+        console.log("Check objkey :: ", objKey);
+        
         if(!objKey){
             return res.status(403).json({
                 message: 'Forbidden Error'
@@ -34,13 +39,14 @@ const apiKey = async (req, res, next) => {
 
 const permission = (permission) => {
     return (req, res,next) => {
+        console.log(req.objKey.permissions)
         if(!req.objKey.permissions){
             return res.status(403).json({
                 message: 'Permission denied'
             })
         }
         console.log('Permission::', req.objKey.permissions);
-        const validPermission = req.objKey.permissions.include(permission);
+        const validPermission = req.objKey.permissions.includes(permission);
         if(!validPermission){
             return res.status(403).json({
                 message: 'Permission denied'
@@ -49,4 +55,11 @@ const permission = (permission) => {
         return next()
     }
 }
-module.exports = {apiKey, permission}
+
+const asyncHandler = fn => {
+    return (req, res, next) => {
+        fn(req, res, next).catch(next)
+    }
+}
+
+module.exports = {apiKey, permission, asyncHandler}

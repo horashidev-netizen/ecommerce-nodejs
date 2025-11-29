@@ -5,6 +5,7 @@ const keyTokenService = require("./keyToken.service");
 const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData } = require("../utils");
 const { log } = require("console");
+const { BadRequestError } = require("../core/error.response");
 const salt = 10;
 
 const RoleShop = {
@@ -20,28 +21,11 @@ class AccessService {
         try {
             const holderShop = await shopModel.findOne({ email }).lean(); //lean tra ve object js thuan tuy
             if (holderShop) {
-                return {
-                    code: 'xxxx',
-                    message: 'Shop already registed'
-                }
+                throw new BadRequestError('Error: Shop already registered!')
             };
             const hashedPassword = await bcript.hashSync(password, salt);
             const newShop = await shopModel.create({ name, email, password: hashedPassword, roles: RoleShop.SHOP });
-            console.log(newShop);
             if (newShop) {
-                //Create publickey and privatekey with new shop
-                // const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
-                //     modulusLength: 4096,
-                //     publicKeyEncoding: {
-                //         type: 'pkcs1', // Thường dùng pkcs1 cho RSA public key
-                //         format: 'pem',
-                //     },
-                //     privateKeyEncoding: {
-                //         type: 'pkcs1',
-                //         format: 'pem',
-                //     },
-                // },
-                // )
                 const publicKey = crypto.randomBytes(64).toString('hex');
                 const privateKey = crypto.randomBytes(64).toString('hex');
 
@@ -57,10 +41,8 @@ class AccessService {
                 })
                 console.log(">>>>>", keyStore)
                 if (!keyStore) {
-                    return {
-                        code: 'xxxx',
-                        message: 'publicKeyString error'
-                    }
+                    throw new BadRequestError('Error: publicKeyString error!')
+    
                 }
 
                 //Create Token pair
@@ -81,11 +63,7 @@ class AccessService {
                 }
             }
         } catch (error) {
-            return {
-                code: "xxx",
-                message: error.message,
-                status: 'error'
-            };
+            throw new BadRequestError(`Error ${error.message}`)
         }
     }
 }
